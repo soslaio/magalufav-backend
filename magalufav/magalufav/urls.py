@@ -5,8 +5,8 @@ from rest_framework import routers
 from core import views
 
 router = routers.DefaultRouter()
-router.register('favoritos', views.FavoritosViewSet, basename='favoritos')
-router.register('clientes', views.ClientesViewSet, basename='clientes')
+router.register('favorites', views.FavoritosViewSet, basename='favorites')
+router.register('customers', views.ClientesViewSet, basename='customers')
 
 urlpatterns = [
     path('', include(router.urls)),

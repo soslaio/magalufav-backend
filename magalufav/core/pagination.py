@@ -10,5 +10,5 @@ class CustomPagination(PageNumberPagination):
                 'page_number': self.page.number,
                 'page_size': self.page_size
             },
-            'favorites': data
+            'results': data
         })

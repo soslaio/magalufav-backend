@@ -1,7 +1,7 @@
 
 from django.contrib import admin
-from .models import Cliente, Favorito
+from .models import Customer, Favorite
 
 
-admin.site.register(Cliente)
-admin.site.register(Favorito)
+admin.site.register(Customer)
+admin.site.register(Favorite)
