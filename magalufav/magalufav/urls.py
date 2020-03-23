@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
 )
 from core import views
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register('favorites', views.FavoritesViewSet, basename='favorites')
 router.register('customers', views.CustomersViewSet, basename='customers')
 

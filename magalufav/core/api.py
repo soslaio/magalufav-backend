@@ -4,8 +4,6 @@ import collections
 from django.core.cache import cache
 from django.conf import settings
 
-
-
 FavoriteWithProduct = collections.namedtuple(
     'FavoriteWithProduct',
     ['id', 'title', 'image', 'price', 'link', 'reviewScore']

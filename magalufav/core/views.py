@@ -7,7 +7,7 @@ from .models import Favorite, Customer
 from .serializers import FavoriteSerializer, CustomerSerializer, FavoriteWithProductsSerializer
 
 
-class CustomersViewSet(mixins.CreateModelMixin,
+class CustomersViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
                        mixins.RetrieveModelMixin,
                        mixins.UpdateModelMixin,
                        mixins.DestroyModelMixin,
@@ -34,7 +34,7 @@ class CustomersViewSet(mixins.CreateModelMixin,
         return Response(status=200, data={'favorites': serializer.data})
 
 
-class FavoritesViewSet(mixins.CreateModelMixin,
+class FavoritesViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
                        mixins.DestroyModelMixin,
                        viewsets.GenericViewSet):
     queryset = Favorite.objects.all()

@@ -36,16 +36,71 @@ Após o término da execução, a API já está disponível no endereço `http:/
 
 | HTTP Method | URI                                          | Ação
 | ---         | ---                                          | ---
+| POST        | http://[hostname]/token/                     | Obtém o token JWT
 | POST        | http://[hostname]/customers/                 | Cria um cliente
 | GET         | http://[hostname]/customers/[uuid]           | Detalhes do cliente
 | PUT         | http://[hostname]/customers/[uuid]           | Atualiza o cliente
 | DELETE      | http://[hostname]/customers/[uuid]           | Remove o cliente
-| GET         | http://[hostname]/customers/[uuid]/favorites | Produtos favoritos do cliente
 | POST        | http://[hostname]/favorites/                 | Cria um produto favorito
+| GET         | http://[hostname]/customers/[uuid]/favorites | Produtos favoritos do cliente
 | DELETE      | http://[hostname]/favorites/[uuid]           | Exclui um produto favorito
-| POST        | http://[hostname]/token/                     | Obtém o token JWT
-| POST        | http://[hostname]/token/refresh/             | Renova o token JWT
 
+#### Exemplos
+Segue exemplo de que dados enviar e o tipo de resposta dada pela API para requisições nos endpoints listados acima.
+Para executar os exemplos é necessário possuir o programa `curl`.
+
+* Obtém o token JWT 
+
+Comando:
+
+    $ curl -i -H "Content-Type: application/json" -X POST -d '{ "username": "admin", "password": "admin_pass" }' http://localhost/token/
+
+Resposta:
+
+```
+HTTP/1.1 200 OK
+Server: gunicorn/20.0.4
+Date: Mon, 23 Mar 2020 23:12:18 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: POST, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 438
+X-Content-Type-Options: nosniff
+
+{
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTU4NTA4NzkyMSwianRpIjoiNGYzYWYyNTdlMmMzNDM4OGJjZjQ1ZWM1NDc2M2E2NmIiLCJ1c2VyX2lkIjoxfQ.Qq2k7C9etrqzCgHy2yWTNFZC6TBOeUvsCX6f3A0akQY",
+    "access": "**eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA1MTIxLCJqdGkiOiIzNDA0NGUyZTY4NTg0ODUyODZlMzA4NmYwMGFhNDVlYiIsInVzZXJfaWQiOjF9.p5fNmBjInzF2_XKfY940Yuc_zmZAG8dHPKbBxaMTx5k**"
+}
+```
+
+* Cria um cliente
+
+Comando:
+
+    $ curl -i -H "Content-Type: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" -X POST -d '{ "name": "José da Silva", "email": "jose@silvacorp.com" }' http://localhost/customers/
+
+Resposta:
+
+```
+HTTP/1.1 201 Created
+Server: gunicorn/20.0.4
+Date: Mon, 23 Mar 2020 23:38:18 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: POST, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 98
+X-Content-Type-Options: nosniff
+
+{
+   "id":"9af3de6c-8ea5-4c26-a3fd-03253afd50a5",
+   "name":"José da Silva",
+   "email":"jose@silvacorp.com"
+}
+```
 
 ### Parâmetros
 #### Django
