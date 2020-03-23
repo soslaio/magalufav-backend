@@ -1,5 +1,5 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .api import fill_favorites
@@ -7,8 +7,11 @@ from .models import Favorite, Customer
 from .serializers import FavoriteSerializer, CustomerSerializer, FavoriteWithProductsSerializer
 
 
-# TODO: verificar os cabeçalhos de respostas utilizado nas apis
-class ClientesViewSet(viewsets.ModelViewSet):
+class CustomersViewSet(mixins.CreateModelMixin,
+                       mixins.RetrieveModelMixin,
+                       mixins.UpdateModelMixin,
+                       mixins.DestroyModelMixin,
+                       viewsets.GenericViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
@@ -31,6 +34,8 @@ class ClientesViewSet(viewsets.ModelViewSet):
         return Response(status=200, data={'favorites': serializer.data})
 
 
-class FavoritosViewSet(viewsets.ModelViewSet):
+class FavoritesViewSet(mixins.CreateModelMixin,
+                       mixins.DestroyModelMixin,
+                       viewsets.GenericViewSet):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
