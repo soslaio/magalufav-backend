@@ -1,13 +1,22 @@
 
-import collections
 import requests
+import collections
 from django.core.cache import cache
+from django.conf import settings
 
-FavoriteWithProduct = collections.namedtuple('FavoriteWithProduct',
-                                             ['id', 'title', 'image', 'price', 'link', 'reviewScore'])
+
+
+FavoriteWithProduct = collections.namedtuple(
+    'FavoriteWithProduct',
+    ['id', 'title', 'image', 'price', 'link', 'reviewScore']
+)
 
 
 def cache_api(func):
+    """
+    Decorator que verifica se os dados do produto estão presentes no cache.
+    Caso não esteja, efetua a consulta à api remota e armazena no cache.
+    """
     def wrapper(product_id):
         key = f'product-{product_id}'
         cached_response = cache.get(key)
@@ -15,7 +24,8 @@ def cache_api(func):
             return 200, cached_response
         status_code, dict_response = func(product_id)
         if status_code == 200:
-            cache.set(key, dict_response)
+            cache_timeout = getattr(settings, 'CACHE_TIMEOUT', 86400)
+            cache.set(key, dict_response, cache_timeout)
         return status_code, dict_response
     return wrapper
 

@@ -10,6 +10,9 @@ class Customer(models.Model):
     name = models.CharField(max_length=200)
     email = models.CharField(max_length=200, unique=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
