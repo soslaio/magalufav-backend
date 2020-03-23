@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  cache:
+    image: redis:4-buster
+    container_name: magalu-cache
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres
+    container_name: magalu-db
+    environment:
+      POSTGRES_DB: magalu
+      POSTGRES_USER: magalu_user
+      POSTGRES_PASSWORD: magalu_pass
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/:/var/lib/postgresql/data/
+
+  pgadmin:
+    depends_on:
+      - db
+    image: dpage/pgadmin4:latest
+    container_name: magalu-pgadmin
+    ports:
+      - 81:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@magazineluiza.com.br
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_pass
+
+  api:
+    depends_on:
+      - db
+      - cache
+    build: .
+    image: magalu-api
+    container_name: magalu-api
+    command: gunicorn -b 0.0.0.0:80 --timeout 90 magalufav.wsgi
+    ports:
+      - 80:80
+    environment:
+      DB_HOST: db
+      DB_NAME: magalu
+      DB_USER: magalu_user
+      DB_PASS: magalu_pass
+      DB_PORT: 5432
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
