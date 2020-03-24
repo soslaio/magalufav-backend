@@ -1,55 +1,84 @@
 # Magalu - Favoritos
+
 Backend REST da aplicação de favoritos do desafio Luiza Labs. Foram utilizadas as seguintes
 tecnologias no desenvolvimento da solução:
 
-* **Python** como linguagem base
-* **Django** como framework web base
-* **Django Rest Framework** como framework para construção de REST APIs
-* **JWT** como mecanismo de autenticação
-* **Redis** como mecanismo de cache
-* **Postgres** como banco de dados
+1. **Python** como linguagem base;
+2. **Django** como framework web base;
+3. **Django Rest Framework** como framework para construção de REST APIs;
+4. **JWT** como mecanismo de autenticação;
+5. **Redis** como mecanismo de cache;
+6. **Postgres** como banco de dados.
+
+### Decisões arquiteturais
+
+1. As informações dos produtos, que são oriundos de uma API externa, não são armazenados no banco de dados persistente;
+2. A primeira vez que as informações de um produto são solicitadas, a consulta remota é executada e o resultado da mesma
+é armazenado em cache. A partir daí, até que o cache expire, os dados do produto são sempre retornados de lá;
+3. O tempo padrão do cache é de 1 dia, para que informações críticas como o preço não fiquem desatualizadas;
+4. Considerando que pela regra de negócio as únicas informações do cliente armazenadas são nome e email, não foi possível
+criar um mecanismo para que os clientes autentiquem para ter acesso às informações. O usuário e senha utilizados nos
+exemplos (`admin` e `admin_pass`) são criados pelos scripts de inicialização da stack Docker. A criação de novos pode
+ser feita através de interface administrativa do Django, mas não faz parte do escopo dessa API.
 
 ### Deploy com Docker
 
 Para levantar a API, primeiramente é necessário obter os arquivos do sistema. Há duas opções para isso. A primeira é
 fazer o download dos arquivos no endereço `https://github.com/soslaio/magalufav-backend/archive/master.zip`. Descompacte
-e entre na pasta pelo terminal do seu sistema operacional.
+e entre na pasta descompactada pelo terminal do seu sistema operacional.
 
-A segunda opção é clonar os arquivos diretamente do repositório Git. Para isso você deve possuir o Git instalado na sua
-máquina. Estando instalado, execute os seguintes comandos no terminal: 
+A segunda opção é clonar os arquivos diretamente do repositório Git. Para isso você deve possuir o
+[Git](https://git-scm.com/) instalado na sua máquina. Estando instalado, execute os seguintes comandos no terminal: 
 
     $ git clone https://github.com/soslaio/magalufav-backend.git
     $ cd magalufav-backend
 
-Com os arquivos já baixados na máquina, o próximo passo é levantar o serviço através do Docker. Isso pode ser feito
-através do terminal, digitando o seguinte comando:
+Com os arquivos já baixados na máquina, o próximo passo é levantar o serviço através do Docker e executar os scripts de
+inicialização do banco. Para isso foi criado um script, que pode ser executado digitando no terminal:
 
-    $ sudo docker-compose -f stack.yml up
+    $ chmod +x run.sh
+    $ ./run.sh
 
-Esse comando baixa da internet todos as imagens dos serviços necessários para o funcionamento do sistema e faz também
-toda a configuração necessária. A execução desse comando necessita de internet e pode ser um pouco demorado, dependendo
+Esse script baixa da internet todos as imagens dos serviços necessários para o funcionamento do sistema e faz também
+toda a configuração do ambiente. A execução desse comando necessita de internet e pode ser um pouco demorado, dependendo
 da máquina onde está sendo executado e da banda de internet disponível.
 
-Após o término da execução, a API já está disponível no endereço `http://localhost:81`.
+Após o término da execução, os endpoints da API já estão disponíveis para serem testados.
 
 ### Endpoints
 
+Endpoints são endereços para acessar recursos na internet. Os seguintes endpoints são disponibilizados através deta API:
+
 | HTTP Method | URI                                          | Ação
 | ---         | ---                                          | ---
-| POST        | http://[hostname]/token/                     | Obtém o token JWT
-| POST        | http://[hostname]/customers/                 | Cria um cliente
-| GET         | http://[hostname]/customers/[uuid]           | Detalhes do cliente
-| PUT         | http://[hostname]/customers/[uuid]           | Atualiza o cliente
-| DELETE      | http://[hostname]/customers/[uuid]           | Remove o cliente
-| POST        | http://[hostname]/favorites/                 | Cria um produto favorito
-| GET         | http://[hostname]/customers/[uuid]/favorites | Produtos favoritos do cliente
-| DELETE      | http://[hostname]/favorites/[uuid]           | Exclui um produto favorito
+| POST        | http://[hostname]/token/                     | Obter o token JWT
+| POST        | http://[hostname]/customers/                 | Criar um cliente
+| GET         | http://[hostname]/customers/[uuid]           | Obter detalhes do cliente
+| PUT         | http://[hostname]/customers/[uuid]           | Atualizar o cliente
+| DELETE      | http://[hostname]/customers/[uuid]           | Remover o cliente
+| POST        | http://[hostname]/favorites/                 | Criar um produto favorito
+| GET         | http://[hostname]/customers/[uuid]/favorites | Obter produtos favoritos do cliente
+| DELETE      | http://[hostname]/favorites/[uuid]           | Excluir um produto favorito
 
-#### Exemplos
+#### Exemplos de utilização
+
 Segue exemplo de que dados enviar e o tipo de resposta dada pela API para requisições nos endpoints listados acima.
-Para executar os exemplos é necessário possuir o programa `curl`.
+Para executar os exemplos é necessário possuir o programa [`curl`](https://curl.haxx.se/) e algum conhecimento de
+requisições HTTP para fazer a adaptação dos comandos de acordo com as respostas geradas pelo sistema. Obviamente outros
+clientes REST podem ser utilizados também, como o Postman, Insomnia, entre outros.
 
-* **Obtém o token JWT** 
+Note que, quando os comandos forem executados no terminal da sua máquina, as respostas serão diferentes. Isso acontece
+principalmente com os tokens de autenticação e os identificadores dos recursos (customers, favorites), que são únicos e
+gerados automaticamente pela API.
+
+* **Obter o token JWT**
+
+O token JWT é uma longa string que identifica o usuário logado a cada requisição efetuada. Esse token possui um tempo de
+vida, e é válido apenas até que expire, sendo necessário gerar um novo através de uma nova consulta ou através da rota
+de "refresh".
+
+O tempo de vida do token configurado por padrão é de 1 hora, mas pode ser alterado através do parâmetro
+`ACCESS_TOKEN_LIFETIME` presente no arquivo de configuração do Django. 
 
 Comando:
 
@@ -74,9 +103,13 @@ X-Content-Type-Options: nosniff
     "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA1MTIxLCJqdGkiOiIzNDA0NGUyZTY4NTg0ODUyODZlMzA4NmYwMGFhNDVlYiIsInVzZXJfaWQiOjF9.p5fNmBjInzF2_XKfY940Yuc_zmZAG8dHPKbBxaMTx5k"
 }
 ```
+
 OBS: O token retornado no atributo `access` será utilizado no cabeçalho das próximas requisições.
 
-* **Cria um cliente**
+* **Criar um cliente**
+
+O endpoint de criação do cliente implementa a regra de negócio que impede que um email seja cadastrado mais de uma vez
+no banco de dados.
 
 Comando:
 
@@ -102,9 +135,9 @@ X-Content-Type-Options: nosniff
    "email":"jose@silvacorp.com"
 }
 ```
-OBS: O `id` gerado para o cliente será utilizado nos próximos comandos relacionados ao cliente.
+OBS: O `id` gerado será utilizado nos próximos comandos relacionados ao cliente.
 
-* **Detalhes do cliente**
+* **Obter detalhes do cliente**
 
 Comando:
 
@@ -131,7 +164,7 @@ X-Content-Type-Options: nosniff
 }
 ```
 
-* **Atualiza o cliente**
+* **Atualizar o cliente**
 
 Comando:
 
@@ -158,7 +191,9 @@ X-Content-Type-Options: nosniff
 }
 ```
 
-* **Remove o cliente**
+* **Remover o cliente**
+
+Remove o cliente e todos os favoritos que ele possui do banco de dados.
 
 Comando:
 
@@ -178,7 +213,10 @@ Content-Length: 0
 X-Content-Type-Options: nosniff
 ```
 
-* **Cria um produto favorito**
+* **Criar um produto favorito**
+
+O endpoint de criação de um favorito implementa a regra de negócio que impede que um mesmo produto seja adicionado mais
+de uma vez para o mesmo cliente e a regra que impede que um produto inexistente seja incluído.
 
 Comando:
 
@@ -205,7 +243,7 @@ X-Content-Type-Options: nosniff
 }
 ```
 
-* **Produtos favoritos do cliente**
+* **Obter produtos favoritos do cliente**
 
 Comando:
 
@@ -243,7 +281,7 @@ X-Content-Type-Options: nosniff
 }
 ```
 
-* **Exclui um produto favorito**
+* **Excluir um produto favorito**
 
 Comando:
 
@@ -265,16 +303,28 @@ X-Content-Type-Options: nosniff
 
 ### Parâmetros
 #### Django
+
 No arquivo de configuração do Django localizado em `magalufav/magalufav/settings.py` há alguns parâmetros definidos que
 podem ser mudados conforme o cenário de execução da aplicação e conveniência. São eles:
 
-* **PAGE_SIZE**: Número de registros que são exibidos na paginação dos resultados.
-* **CACHE_TIMEOUT**: Número de segundos que o Redis mantém as informações de um produto
-em cache.
-* **ACCESS_TOKEN_LIFETIME**: Número de segundos  de validade do token JWT enviado para o cliente.
-Ao fim desse tempo o tokem expira e é necessário fazer um refresh do token.
-* **REFRESH_TOKEN_LIFETIME**: Número de segundos de validade do token JWT utilizado para fazer o
-refresh do token de acesso.
+* **PAGE_SIZE**: Número de registros que são exibidos na paginação dos resultados;
+* **CACHE_TIMEOUT**: Número de segundos que o Redis mantém as informações de um produto em cache;
+* **ACCESS_TOKEN_LIFETIME**: Número de segundos  de validade do token JWT enviado para o cliente. Ao fim desse tempo o
+token expira e é necessário fazer um refresh do token;
+* **REFRESH_TOKEN_LIFETIME**: Número de segundos de validade do token JWT utilizado para fazer o refresh do token de
+acesso.
 
 #### Variáveis de ambiente
-Há variáveis de ambiente que podem ser alteradas no arquivo `stack.yml`.
+
+Há variáveis de ambiente que podem ser alteradas no arquivo `stack.yml`. São basicamente configurações de conexão com o
+banco de dados e com o sistema de cache. Não é necessário alterar essas variáveis, já que são ajustadas para funcionar
+dentro da stack do Docker, mas há essa possibilidade, caso seja utilizada dentro de outros contextos.
+
+* DB_HOST: Host do banco de dados;
+* DB_NAME: Nome do banco de dados;
+* DB_USER: Usuário de acesso ao banco de dados;
+* DB_PASS: Senha do usuário de acesso ao banco de dados;
+* DB_PORT: Porta de conexão com o banco de dados;
+* REDIS_HOST: Host do servidor de cache Redis;
+* REDIS_PORT: Porta de conexão com o servidor de cache Redis.
+
