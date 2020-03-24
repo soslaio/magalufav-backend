@@ -49,7 +49,7 @@ Após o término da execução, a API já está disponível no endereço `http:/
 Segue exemplo de que dados enviar e o tipo de resposta dada pela API para requisições nos endpoints listados acima.
 Para executar os exemplos é necessário possuir o programa `curl`.
 
-* Obtém o token JWT 
+* **Obtém o token JWT** 
 
 Comando:
 
@@ -71,11 +71,12 @@ X-Content-Type-Options: nosniff
 
 {
     "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTU4NTA4NzkyMSwianRpIjoiNGYzYWYyNTdlMmMzNDM4OGJjZjQ1ZWM1NDc2M2E2NmIiLCJ1c2VyX2lkIjoxfQ.Qq2k7C9etrqzCgHy2yWTNFZC6TBOeUvsCX6f3A0akQY",
-    "access": "**eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA1MTIxLCJqdGkiOiIzNDA0NGUyZTY4NTg0ODUyODZlMzA4NmYwMGFhNDVlYiIsInVzZXJfaWQiOjF9.p5fNmBjInzF2_XKfY940Yuc_zmZAG8dHPKbBxaMTx5k**"
+    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA1MTIxLCJqdGkiOiIzNDA0NGUyZTY4NTg0ODUyODZlMzA4NmYwMGFhNDVlYiIsInVzZXJfaWQiOjF9.p5fNmBjInzF2_XKfY940Yuc_zmZAG8dHPKbBxaMTx5k"
 }
 ```
+OBS: O token retornado no atributo `access` será utilizado no cabeçalho das próximas requisições.
 
-* Cria um cliente
+* **Cria um cliente**
 
 Comando:
 
@@ -100,6 +101,166 @@ X-Content-Type-Options: nosniff
    "name":"José da Silva",
    "email":"jose@silvacorp.com"
 }
+```
+OBS: O `id` gerado para o cliente será utilizado nos próximos comandos relacionados ao cliente.
+
+* **Detalhes do cliente**
+
+Comando:
+
+    $ curl -i -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" http://localhost/customers/9af3de6c-8ea5-4c26-a3fd-03253afd50a5/
+
+Resposta:
+
+```
+HTTP/1.1 200 OK
+Server: gunicorn/20.0.4
+Date: Mon, 23 Mar 2020 23:48:39 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 98
+X-Content-Type-Options: nosniff
+
+{
+   "id":"9af3de6c-8ea5-4c26-a3fd-03253afd50a5",
+   "name":"José da Silva",
+   "email":"jose@silvacorp.com"
+}
+```
+
+* **Atualiza o cliente**
+
+Comando:
+
+    $ curl -i -H "Content-Type: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" -X PUT -d '{ "name": "José da Silva Silva", "email": "jose@silvacorp.com" }' http://localhost/customers/9af3de6c-8ea5-4c26-a3fd-03253afd50a5/
+
+Resposta:
+
+```
+HTTP/1.1 200 OK
+Server: gunicorn/20.0.4
+Date: Mon, 23 Mar 2020 23:53:49 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 104
+X-Content-Type-Options: nosniff
+
+{
+   "id":"9af3de6c-8ea5-4c26-a3fd-03253afd50a5",
+   "name":"José da Silva Silva",
+   "email":"jose@silvacorp.com"
+}
+```
+
+* **Remove o cliente**
+
+Comando:
+
+    $ curl -i -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" -X DELETE http://localhost/customers/9af3de6c-8ea5-4c26-a3fd-03253afd50a5/
+
+Resposta:
+
+```
+HTTP/1.1 204 No Content
+Server: gunicorn/20.0.4
+Date: Mon, 23 Mar 2020 23:58:49 GMT
+Connection: close
+Vary: Accept
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 0
+X-Content-Type-Options: nosniff
+```
+
+* **Cria um produto favorito**
+
+Comando:
+
+    $ curl -i -H "Content-Type: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" -d '{ "product_id": "a96b5916-9109-5d2e-138a-7b656efe1f92", "customer": "d705e535-d31a-48b9-9bd7-c193053b5f82" }' -X POST http://localhost/favorites/
+
+Resposta:
+
+```
+HTTP/1.1 201 Created
+Server: gunicorn/20.0.4
+Date: Tue, 24 Mar 2020 00:03:50 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: POST, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 147
+X-Content-Type-Options: nosniff
+
+{
+   "id":"520ef1fd-7462-4fb9-9522-5c9c7af9d7e0",
+   "product_id":"a96b5916-9109-5d2e-138a-7b656efe1f92",
+   "customer":"d705e535-d31a-48b9-9bd7-c193053b5f82"
+}
+```
+
+* **Produtos favoritos do cliente**
+
+Comando:
+
+    $ curl -i -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" http://localhost/customers/d705e535-d31a-48b9-9bd7-c193053b5f82/favorites/
+
+Resposta:
+
+```
+HTTP/1.1 200 OK
+Server: gunicorn/20.0.4
+Date: Tue, 24 Mar 2020 00:07:37 GMT
+Connection: close
+Content-Type: application/json
+Vary: Accept
+Allow: GET, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 366
+X-Content-Type-Options: nosniff
+
+{
+   "meta":{
+      "page_number":1,
+      "page_size":100
+   },
+   "results":[
+      {
+         "id":"520ef1fd-7462-4fb9-9522-5c9c7af9d7e0",
+         "title":"The Walking Dead - Season 2 para PS3",
+         "image":"http://challenge-api.luizalabs.com/images/a96b5916-9109-5d2e-138a-7b656efe1f92.jpg",
+         "price":129.9,
+         "link":"http://challenge-api.luizalabs.com/api/product/a96b5916-9109-5d2e-138a-7b656efe1f92",
+         "reviewScore":null
+      }
+   ]
+}
+```
+
+* **Exclui um produto favorito**
+
+Comando:
+
+    curl -i -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1MDA5OTc0LCJqdGkiOiJlZDVlNWVjZjIyZDE0YTVmODcwNWRkZDE3NTkzZWJhMyIsInVzZXJfaWQiOjF9.RhrlIFn7EGdNiWurlwL0Pr2JWqBlQwzBjMbtLqlPk_Q" -X DELETE http://localhost/favorites/520ef1fd-7462-4fb9-9522-5c9c7af9d7e0/
+
+Resposta:
+
+```
+HTTP/1.1 204 No Content
+Server: gunicorn/20.0.4
+Date: Tue, 24 Mar 2020 00:10:47 GMT
+Connection: close
+Vary: Accept
+Allow: DELETE, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 0
+X-Content-Type-Options: nosniff
 ```
 
 ### Parâmetros
