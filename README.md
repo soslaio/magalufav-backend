@@ -39,15 +39,15 @@ inicialização do banco. Para isso foi criado um script, que pode ser executado
     $ chmod +x run.sh
     $ ./run.sh
 
-Esse script baixa da internet todos as imagens dos serviços necessários para o funcionamento do sistema e faz também
-toda a configuração do ambiente. A execução desse comando necessita de internet e pode ser um pouco demorado, dependendo
-da máquina onde está sendo executado e da banda de internet disponível.
+Esse script baixa da internet todos as imagens Docker dos serviços necessários para o funcionamento do sistema e faz
+também toda a configuração do ambiente. A execução desse comando necessita do Docker instalado, de internet e pode ser
+um pouco demorado, dependendo da máquina onde está sendo executado e da banda de internet disponível.
 
 Após o término da execução, os endpoints da API já estão disponíveis para serem testados.
 
 ### Endpoints
 
-Endpoints são endereços para acessar recursos na internet. Os seguintes endpoints são disponibilizados através deta API:
+Endpoints são endereços para acessar recursos na internet. Os seguintes endpoints são disponibilizados através desta API:
 
 | HTTP Method | URI                                          | Ação
 | ---         | ---                                          | ---
